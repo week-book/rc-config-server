@@ -58,3 +58,9 @@
         dest: "{{ ansible_env.HOME }}/.vimrc"
         mode: '0644'
       become_user: "{{ ansible_user_id }}"
+
+    - name: Установить оболочку zsh по умолчанию для пользователя
+      ansible.builtin.user:
+        name: "{{ ansible_user_id }}"
+        shell: "{{ lookup('pipe', 'which zsh') | default('/usr/bin/zsh', true) }}"
+      become: yes
