@@ -1,7 +1,11 @@
-- name: Установка базовых утилит
+- name: Установка базовых утилит, Oh My Zsh и конфигов
   hosts: all
   become: yes
   gather_facts: yes
+
+  vars:
+    rc_repo_base: https://raw.githubusercontent.com/week-book/rc-config-server/master
+    ohmyzsh_repo: https://github.com/ohmyzsh/ohmyzsh.git
 
   tasks:
     - name: Обновить кэш apt (только для Debian/Ubuntu)
@@ -17,3 +21,40 @@
           - tmux
           - vim
         state: present
+
+    - name: Клонировать Oh My Zsh в домашний каталог пользователя
+      ansible.builtin.git:
+        repo: "{{ ohmyzsh_repo }}"
+        dest: "{{ ansible_env.HOME }}/.oh-my-zsh"
+        version: master
+        update: no
+      become_user: "{{ ansible_user_id }}"
+
+    - name: Установить шаблонный .zshrc от Oh My Zsh (если нет своего)
+      ansible.builtin.copy:
+        src: "{{ ansible_env.HOME }}/.oh-my-zsh/templates/zshrc.zsh-template"
+        dest: "{{ ansible_env.HOME }}/.zshrc"
+        remote_src: yes
+        force: no
+      become_user: "{{ ansible_user_id }}"
+
+    - name: Скачиваем ваш конфиг zsh из GitHub
+      ansible.builtin.get_url:
+        url: "{{ rc_repo_base }}/.zshrc"
+        dest: "{{ ansible_env.HOME }}/.zshrc"
+        mode: '0644'
+      become_user: "{{ ansible_user_id }}"
+
+    - name: Скачиваем конфиг tmux из GitHub
+      ansible.builtin.get_url:
+        url: "{{ rc_repo_base }}/.tmux.conf"
+        dest: "{{ ansible_env.HOME }}/.tmux.conf"
+        mode: '0644'
+      become_user: "{{ ansible_user_id }}"
+
+    - name: Скачиваем конфиг vim из GitHub
+      ansible.builtin.get_url:
+        url: "{{ rc_repo_base }}/.vimrc"
+        dest: "{{ ansible_env.HOME }}/.vimrc"
+        mode: '0644'
+      become_user: "{{ ansible_user_id }}"
