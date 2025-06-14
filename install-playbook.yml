@@ -1,0 +1,19 @@
+- name: Установка базовых утилит
+  hosts: all
+  become: yes
+  gather_facts: yes
+
+  tasks:
+    - name: Обновить кэш apt (только для Debian/Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_pkg_mgr == 'apt'
+
+    - name: Установить утилиты через пакетный менеджер
+      ansible.builtin.package:
+        name:
+          - eza
+          - zsh
+          - tmux
+          - vim
+        state: present
