@@ -76,13 +76,16 @@
 ```ini
 [servers]
 # Пример подключения к серверу
-myserver ansible_host=example.com ansible_user=ubuntu ansible_port=22
+myserver ansible_host=example.com ansible_user=ubuntu ansible_port=22 ansible_ssh_private_key_file=~/.ssh/id_rsa
 ```
 
 * `myserver` — алиас вашего хоста;
 * `ansible_host` — IP-адрес или доменное имя сервера;
 * `ansible_user` — имя пользователя для SSH;
-* `ansible_port` — порт SSH (по умолчанию 22).
+* `ansible_port` — порт SSH (по умолчанию 22);
+* `ansible_ssh_private_key_file` — путь к приватному SSH-ключу, используемому для подключения.
+
+Убедитесь, что публичный ключ (обычно `~/.ssh/id_rsa.pub`) добавлен в файл `~/.ssh/authorized_keys` на целевом сервере.
 
 При необходимости вы можете создавать группы серверов и отдельные файлы в каталоге `group_vars` или `host_vars`.
 
